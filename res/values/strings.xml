@@ -8,5 +8,8 @@
     <string name="login_password">密码</string>
     <string name="loginBtn">登录</string>
     <string name="registerBtn">注册</string>
+    <string name="downloadBtn">下载文件</string>
+    <string name="uploadBtn">上传文件</string>
+    <string name="infoSearchBtn">图书查询</string>
 
 </resources>
