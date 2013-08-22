@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin" >
+
+    <EditText
+        android:id="@+id/reg_usernameEdit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:ems="10"
+        android:hint="@string/login_username"
+        android:inputType="text" >
+
+        <requestFocus />
+    </EditText>
+
+    <EditText
+        android:id="@+id/reg_passwordEdit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/reg_usernameEdit"
+        android:ems="10"
+        android:hint="@string/login_password"
+        android:inputType="textPassword" />
+
+    <EditText
+        android:id="@+id/reg_passwordRepeatEdit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/reg_passwordEdit"
+        android:ems="10"
+        android:hint="@string/passwordRepeat"
+        android:inputType="textPassword" />
+
+    <EditText
+        android:id="@+id/reg_emailEdit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/reg_passwordRepeatEdit"
+        android:ems="10"
+        android:hint="@string/email"
+        android:inputType="textEmailAddress" />
+
+    <EditText
+        android:id="@+id/reg_birthEdit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/reg_emailEdit"
+        android:layout_marginTop="42dp"
+        android:ems="10"
+        android:hint="@string/birth"
+        android:inputType="date" />
+
+    <EditText
+        android:id="@+id/reg_mobileEdit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignRight="@+id/reg_passwordRepeatEdit"
+        android:layout_below="@+id/reg_emailEdit"
+        android:ems="10"
+        android:hint="@string/mobile"
+        android:inputType="phone" />
+
+    <Button
+        android:id="@+id/reg_birthBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/reg_birthEdit"
+        android:layout_toRightOf="@+id/reg_birthEdit"
+        android:text="@string/selectBtn" />
+
+    <Button
+        android:id="@+id/reg_registerBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/reg_birthEdit"
+        android:layout_centerHorizontal="true"
+        android:minWidth="108dp"
+        android:text="@string/registerBtn" />
+
+</RelativeLayout>

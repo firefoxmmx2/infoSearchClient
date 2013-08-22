@@ -11,5 +11,10 @@
     <string name="downloadBtn">下载文件</string>
     <string name="uploadBtn">上传文件</string>
     <string name="infoSearchBtn">图书查询</string>
+    <string name="selectBtn">选择</string>
+    <string name="passwordRepeat">重复密码</string>
+    <string name="email">邮箱</string>
+    <string name="birth">生日</string>
+    <string name="mobile">手机</string>
 
 </resources>
