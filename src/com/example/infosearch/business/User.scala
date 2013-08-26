@@ -7,6 +7,17 @@ import com.example.infosearch.activity.RegisterActivity
 import android.content.Context
 import java.text.SimpleDateFormat
 import java.text.ParseException
+import org.apache.http.client.HttpClient
+import org.apache.http.client.methods.HttpPost
+import com.example.infosearch.common.Constants
+import org.apache.http.NameValuePair
+import scala.collection.JavaConverters._
+import org.apache.http.message.BasicNameValuePair
+import org.apache.http.client.entity.UrlEncodedFormEntity
+import org.apache.http.impl.client.DefaultHttpClient
+import org.apache.http.HttpStatus
+import org.apache.http.util.EntityUtils
+import scala.util.parsing.json.JSON
 
 object UserService {
   val sdf = new SimpleDateFormat("yyyy-MM-dd")
@@ -17,25 +28,33 @@ object UserService {
                email: EditText,
                birth: EditText,
                mobile: EditText): Unit = {
+    var ret = false;
     if (regValidate(context, username, password, passwordRepeat, email, birth, mobile)) {
+      import scala.collection.mutable.ListBuffer
+      val request = new HttpPost(Constants.api_url_register)
+      val params = ListBuffer[NameValuePair]()
+      params += new BasicNameValuePair("username", username.getText().toString())
+      params += new BasicNameValuePair("password", password.getText().toString())
+      params += new BasicNameValuePair("email", email.getText().toString())
+      params += new BasicNameValuePair("birth", birth.getText().toString())
+      params += new BasicNameValuePair("mobile", mobile.getText().toString())
 
-      add(User(username = username.getText().toString(),
-        password = password.getText().toString(),
-        email = email.getText().toString(),
-        birth = sdf.parse(birth.getText().toString()),
-        mobile = Option(mobile.getText().toString())))
+      request.setEntity(new UrlEncodedFormEntity(params.asJava, "utf8"))
+      val httpclient = new DefaultHttpClient
+      val response = httpclient.execute(request)
+      if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+        val result = EntityUtils.toString(response.getEntity())
+        val resultMap = JSON.parseFull(result) match {
+          case Some(map: Map[String, Any]) => map
+        }
+        ret = resultMap.getOrElse("resultCode", 0) == 1
+        if (ret) {
+          Toast.makeText(context, "[错误]:" + resultMap.get("message"),
+            Toast.LENGTH_LONG).show()
+        }
+      }
     }
-  }
-  def add(user: User) = {
-
-  }
-
-  def update(user: User) = {
-
-  }
-
-  def delete(user: User) = {
-
+    ret
   }
 
   def regValidate(context: Context, username: EditText,
