@@ -21,6 +21,8 @@ import scala.util.parsing.json.JSON
 import scala.collection.mutable.ListBuffer
 import org.apache.http.params.BasicHttpParams
 import android.content.SharedPreferences
+import com.example.infosearch.common.Utils
+import org.apache.http.HttpResponse
 
 object UserService {
 	val loginInfo = scala.collection.mutable.Map[String, Any]()
@@ -35,18 +37,13 @@ object UserService {
 		var ret = false;
 		if (regValidate(context, username, password, passwordRepeat, email, birth, mobile)) {
 			import scala.collection.mutable.ListBuffer
-			val request = new HttpPost(Constants.api_url_register)
-			val params = ListBuffer[NameValuePair]()
-			params += new BasicNameValuePair("username", username.getText().toString())
-			params += new BasicNameValuePair("password", password.getText().toString())
-			params += new BasicNameValuePair("email", email.getText().toString())
-			params += new BasicNameValuePair("birth", birth.getText().toString())
-			params += new BasicNameValuePair("mobile", mobile.getText().toString())
+			val params = Map("username" -> username.getText().toString(),
+				"password" -> password.getText().toString(),
+				"email" -> email.getText().toString(),
+				"birth" -> birth.getText().toString(),
+				"mobile" -> mobile.getText().toString())
 
-			request.setEntity(new UrlEncodedFormEntity(params.asJava, "utf8"))
-			val httpclient = new DefaultHttpClient
-			val response = httpclient.execute(request)
-			if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+			Utils.doHttpRequest(url = Constants.api_url_register, data = params, onSuccess = (response: HttpResponse, httpclient: HttpClient) => {
 				val result = EntityUtils.toString(response.getEntity())
 				val resultMap = JSON.parseFull(result) match {
 					case Some(map: Map[String, Any]) => map
@@ -56,54 +53,51 @@ object UserService {
 					Toast.makeText(context, "[错误]:" + resultMap.get("message"),
 						Toast.LENGTH_LONG).show()
 				}
-			}
+			})
 		}
 		ret
 	}
 
 	def login(context: Context, usernameEdit: EditText, passwordEdit: EditText) = {
 		var ret = false
-		val request = new HttpPost(Constants.api_url_login)
-		val params = ListBuffer[NameValuePair]()
-		params += new BasicNameValuePair("username", usernameEdit.getText().toString())
-		params += new BasicNameValuePair("password", passwordEdit.getText().toString())
-		request.setEntity(new UrlEncodedFormEntity(params.asJava, "utf8"))
-		val httpclient = new DefaultHttpClient
-		val response = httpclient.execute(request)
-		if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-			val result = EntityUtils.toString(response.getEntity())
-			val resultMap = JSON.parseFull(result) match {
-				case Some(map: Map[String, Any]) => map
-			}
+		val params = Map("username" -> usernameEdit.getText.toString,
+			"password" -> passwordEdit.getText.toString)
 
-			ret = resultMap.getOrElse("resultCode", 0) == 1
-			if (ret) {
-				val sharedPreference = context.getSharedPreferences("userdata", Context.MODE_PRIVATE)
-				val userdata = resultMap.get("user") match {
+		Utils.doHttpRequest(url = Constants.api_url_login,
+			data = params,
+			onSuccess = (response: HttpResponse, httpclient: HttpClient) => {
+				val result = EntityUtils.toString(response.getEntity())
+				val resultMap = JSON.parseFull(result) match {
 					case Some(map: Map[String, Any]) => map
 				}
 
-				val edit = sharedPreference.edit()
-				edit.putString("username", userdata.get("username").toString())
-				edit.putString("password", userdata.get("password").toString())
-				edit.commit();
+				ret = resultMap.getOrElse("resultCode", 0) == 1
+				if (ret) {
+					val sharedPreference = context.getSharedPreferences("userdata", Context.MODE_PRIVATE)
+					val userdata = resultMap.get("user") match {
+						case Some(map: Map[String, Any]) => map
+					}
 
-				loginInfo += "username" -> userdata.get("username").toString()
-				loginInfo += "password" -> userdata.get("password").toString()
-				loginInfo += "cookie" -> httpclient.getCookieStore()
+					val edit = sharedPreference.edit()
+					edit.putString("username", userdata.get("username").toString())
+					edit.putString("password", userdata.get("password").toString())
+					edit.commit();
 
-			} else {
-				Toast.makeText(context,
-					"[错误]:" + resultMap.get("message"),
-					Toast.LENGTH_LONG).show()
-			}
+					loginInfo += "username" -> userdata.get("username").toString()
+					loginInfo += "password" -> userdata.get("password").toString()
+					loginInfo += "cookie" -> httpclient.asInstanceOf[DefaultHttpClient].getCookieStore()
 
-		}
+				} else {
+					Toast.makeText(context,
+						"[错误]:" + resultMap.get("message"),
+						Toast.LENGTH_LONG).show()
+				}
+			})
 		ret
 	}
 
-	def isLogin(context: Context, usernameEdit: EditText, passwordEdit: EditText) = {
-
+	def isLogin(context: Context, userid: Int) = {
+		context.getApplicationContext()
 	}
 
 	def regValidate(context: Context, username: EditText,
